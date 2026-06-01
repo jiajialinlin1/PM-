@@ -1,0 +1,14 @@
+{
+  "name": "product-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/backend/server.js",
+    "start": "NODE_ENV=production node src/backend/server.js",
+    "db:seed": "node src/backend/seed.js"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

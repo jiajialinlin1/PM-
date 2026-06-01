@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Starter</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar" aria-label="Product overview">
+        <div>
+          <p class="eyebrow">Product workspace</p>
+          <h1>产品原型控制台</h1>
+        </div>
+        <div class="health">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="healthStatus">Connecting</span>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="Feature metrics">
+        <article>
+          <span id="plannedCount">0</span>
+          <p>待规划</p>
+        </article>
+        <article>
+          <span id="buildingCount">0</span>
+          <p>开发中</p>
+        </article>
+        <article>
+          <span id="shippedCount">0</span>
+          <p>已上线</p>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>功能路线图</h2>
+          </div>
+          <form id="featureForm" class="stacked-form">
+            <label>
+              功能名称
+              <input name="title" placeholder="例如：用户登录" required />
+            </label>
+            <label>
+              描述
+              <textarea name="description" rows="3" placeholder="写下目标、边界和用户价值"></textarea>
+            </label>
+            <label>
+              优先级
+              <select name="priority">
+                <option value="high">高</option>
+                <option value="medium" selected>中</option>
+                <option value="low">低</option>
+              </select>
+            </label>
+            <button type="submit">新增功能</button>
+          </form>
+          <div id="featureList" class="list" aria-live="polite"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <h2>用户反馈</h2>
+          </div>
+          <form id="feedbackForm" class="stacked-form">
+            <label>
+              来源用户
+              <input name="author" placeholder="例如：访谈用户 A" />
+            </label>
+            <label>
+              反馈内容
+              <textarea name="message" rows="4" placeholder="记录真实反馈或需求信号" required></textarea>
+            </label>
+            <button type="submit">记录反馈</button>
+          </form>
+          <div id="feedbackList" class="list compact-list" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
