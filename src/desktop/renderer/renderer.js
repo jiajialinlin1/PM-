@@ -1,5 +1,4 @@
 const elements = {
-  closeButton: document.querySelector('#closeButton'),
   statusBanner: document.querySelector('#statusBanner'),
   remainingUsd: document.querySelector('#remainingUsd'),
   totalUsd: document.querySelector('#totalUsd'),
@@ -13,13 +12,12 @@ const elements = {
   settingsPanel: document.querySelector('#settingsPanel'),
   tokenInput: document.querySelector('#tokenInput'),
   saveTokenButton: document.querySelector('#saveTokenButton'),
-  clearTokenButton: document.querySelector('#clearTokenButton'),
-  logsList: document.querySelector('#logsList')
+  clearTokenButton: document.querySelector('#clearTokenButton')
 };
 
 let currentState = null;
+let hideTimer = null;
 
-elements.closeButton.addEventListener('click', () => window.quotaAPI.hide());
 elements.refreshButton.addEventListener('click', () => runAction(() => window.quotaAPI.refresh()));
 elements.showSettingsButton.addEventListener('click', () => {
   elements.settingsPanel.hidden = !elements.settingsPanel.hidden;
@@ -33,6 +31,15 @@ elements.tokenInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     saveToken();
   }
+});
+document.body.addEventListener('mouseenter', () => {
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+});
+document.body.addEventListener('mouseleave', () => {
+  hideTimer = setTimeout(() => window.quotaAPI.hide(), 90);
 });
 
 window.quotaAPI.onStateChange(render);
@@ -89,7 +96,6 @@ function render(state) {
   elements.updatedAt.textContent = formatDateTime(snapshot?.updatedAt, '未知');
 
   renderBanner(state);
-  renderLogs(snapshot?.recentLogs || []);
 
   if (!state.hasToken) {
     elements.settingsPanel.hidden = false;
@@ -130,35 +136,6 @@ function renderBanner(state) {
 
   elements.statusBanner.textContent = '额度数据已更新。';
   elements.statusBanner.classList.add('ok');
-}
-
-function renderLogs(logs) {
-  if (!logs.length) {
-    elements.logsList.innerHTML = '<div class="empty">暂无最近调用记录</div>';
-    return;
-  }
-
-  elements.logsList.replaceChildren(...logs.map((log) => {
-    const item = document.createElement('article');
-    item.className = 'log-item';
-
-    const main = document.createElement('div');
-    main.className = 'log-main';
-
-    const model = document.createElement('strong');
-    model.textContent = log.modelName || '未知模型';
-
-    const quota = document.createElement('span');
-    quota.textContent = formatUsd(log.quotaUsd, 6);
-
-    const meta = document.createElement('div');
-    meta.className = 'log-meta';
-    meta.textContent = `${formatDateTime(log.createdAt, '未知时间')} · 提示 ${log.promptTokens || 0} · 补全 ${log.completionTokens || 0}`;
-
-    main.append(model, quota);
-    item.append(main, meta);
-    return item;
-  }));
 }
 
 function formatUsd(value, digits = 3) {

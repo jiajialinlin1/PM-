@@ -15,8 +15,8 @@ const { createStore } = require('./storage.cjs');
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 const MANUAL_REFRESH_COOLDOWN_MS = 60 * 1000;
 const RATE_LIMIT_BACKOFF_MS = 30 * 60 * 1000;
-const WINDOW_WIDTH = 390;
-const WINDOW_HEIGHT = 560;
+const WINDOW_WIDTH = 372;
+const WINDOW_HEIGHT = 520;
 const TRAY_ICON_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAR0lEQVR4nGNgoCP4D8VUMYRiw6hiELohZBuGTRPJBuGynWRXUcUgfOFBUlhRxSBCMUR0DNLNIHQ1RBlEjDqiXUQIDyGDyAYAgcplmzSG3qgAAAAASUVORK5CYII=';
 
@@ -120,6 +120,9 @@ function createPopover() {
     show: false,
     frame: false,
     resizable: false,
+    movable: false,
+    minimizable: false,
+    maximizable: false,
     fullscreenable: false,
     skipTaskbar: true,
     alwaysOnTop: true,
@@ -127,7 +130,7 @@ function createPopover() {
     vibrancy: 'hud',
     visualEffectState: 'active',
     backgroundColor: '#00000000',
-    hasShadow: true,
+    hasShadow: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
