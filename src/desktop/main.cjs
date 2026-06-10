@@ -2,6 +2,7 @@ const path = require('node:path');
 const {
   app,
   BrowserWindow,
+  clipboard,
   Menu,
   Tray,
   ipcMain,
@@ -17,7 +18,8 @@ const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 const MANUAL_REFRESH_COOLDOWN_MS = 60 * 1000;
 const RATE_LIMIT_BACKOFF_MS = 30 * 60 * 1000;
 const WINDOW_WIDTH = 376;
-const WINDOW_HEIGHT = 520;
+const WINDOW_COLLAPSED_HEIGHT = 440;
+const WINDOW_EXPANDED_HEIGHT = 520;
 const TRAY_ICON_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAR0lEQVR4nGNgoCP4D8VUMYRiw6hiELohZBuGTRPJBuGynWRXUcUgfOFBUlhRxSBCMUR0DNLNIHQ1RBlEjDqiXUQIDyGDyAYAgcplmzSG3qgAAAAASUVORK5CYII=';
 
@@ -28,6 +30,7 @@ let refreshTimer;
 let activeRefresh = null;
 let lastRefreshStartedAt = 0;
 let rateLimitedUntil = 0;
+let currentWindowHeight = WINDOW_COLLAPSED_HEIGHT;
 
 const state = {
   hasToken: false,
@@ -124,7 +127,7 @@ function createTray() {
 function createPopover() {
   popover = new BrowserWindow({
     width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
+    height: WINDOW_COLLAPSED_HEIGHT,
     show: false,
     frame: false,
     resizable: false,
@@ -135,8 +138,6 @@ function createPopover() {
     skipTaskbar: true,
     alwaysOnTop: true,
     transparent: true,
-    vibrancy: 'popover',
-    visualEffectState: 'active',
     backgroundColor: '#00000000',
     hasShadow: false,
     roundedCorners: false,
@@ -161,8 +162,20 @@ function registerIpc() {
   ipcMain.handle('quota:hide', () => {
     popover.hide();
   });
+  ipcMain.handle('quota:set-expanded', (_event, expanded) => {
+    setPopoverExpanded(Boolean(expanded));
+  });
   ipcMain.handle('quota:open-usage', () => {
     shell.openExternal('https://used.8s.hk/');
+  });
+  ipcMain.handle('quota:copy-token', () => {
+    const token = readStoredToken();
+    if (!token) {
+      throw new Error('没有可复制的 token');
+    }
+
+    clipboard.writeText(token);
+    return true;
   });
   ipcMain.handle('quota:save-token', async (_event, token) => {
     const cleanToken = String(token || '').trim();
@@ -334,7 +347,16 @@ function positionPopover() {
   );
   const y = Math.round(trayBounds.y + trayBounds.height + 6);
 
-  popover.setBounds({ x, y, width: WINDOW_WIDTH, height: WINDOW_HEIGHT });
+  popover.setBounds({ x, y, width: WINDOW_WIDTH, height: currentWindowHeight });
+}
+
+function setPopoverExpanded(expanded) {
+  currentWindowHeight = expanded ? WINDOW_EXPANDED_HEIGHT : WINDOW_COLLAPSED_HEIGHT;
+  if (popover?.isVisible()) {
+    positionPopover();
+  } else if (popover) {
+    popover.setSize(WINDOW_WIDTH, currentWindowHeight, false);
+  }
 }
 
 function updateTray() {

@@ -17,6 +17,22 @@
             <span id="statusPill" class="status-pill">读取中</span>
           </div>
         </div>
+        <div class="toolbar" aria-label="快捷操作">
+          <button id="refreshButton" class="icon-button" type="button" title="刷新额度" aria-label="刷新额度">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 12a8 8 0 0 1-13.7 5.6" />
+              <path d="M4 12A8 8 0 0 1 17.7 6.4" />
+              <path d="M17 2v5h5" />
+              <path d="M7 22v-5H2" />
+            </svg>
+          </button>
+          <button id="showSettingsButton" class="icon-button" type="button" title="设置 token" aria-label="设置 token">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" />
+              <path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.07.07a2.1 2.1 0 1 1-2.97 2.97l-.07-.07a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65V21a2.1 2.1 0 1 1-4.2 0v-.1a1.8 1.8 0 0 0-1.18-1.64 1.8 1.8 0 0 0-1.93.4l-.07.07a2.1 2.1 0 1 1-2.97-2.97l.07-.07a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.65-1.1H2a2.1 2.1 0 1 1 0-4.2h.1a1.8 1.8 0 0 0 1.64-1.18 1.8 1.8 0 0 0-.4-1.93l-.07-.07A2.1 2.1 0 1 1 6.24 3.3l.07.07a1.8 1.8 0 0 0 2 .36A1.8 1.8 0 0 0 9.4 2.08V2a2.1 2.1 0 1 1 4.2 0v.1a1.8 1.8 0 0 0 1.1 1.64 1.8 1.8 0 0 0 2-.36l.07-.07a2.1 2.1 0 1 1 2.97 2.97l-.07.07a1.8 1.8 0 0 0-.36 2 1.8 1.8 0 0 0 1.65 1.1H22a2.1 2.1 0 1 1 0 4.2h-.1A1.8 1.8 0 0 0 19.4 15Z" />
+            </svg>
+          </button>
+        </div>
       </header>
 
       <section class="quota-grid" aria-label="额度概览">
@@ -49,13 +65,16 @@
         </div>
         <div class="row">
           <span>已保存 token</span>
-          <strong id="maskedToken">未设置</strong>
+          <div class="token-value">
+            <strong id="maskedToken">未设置</strong>
+            <button id="copyTokenButton" class="copy-button" type="button" title="复制 token" aria-label="复制 token">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="9" y="9" width="10" height="10" rx="2" />
+                <path d="M5 15V7a2 2 0 0 1 2-2h8" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </section>
-
-      <section class="actions">
-        <button id="refreshButton" type="button">刷新额度</button>
-        <button id="showSettingsButton" class="secondary" type="button">设置 token</button>
       </section>
 
       <section id="settingsPanel" class="settings" hidden>

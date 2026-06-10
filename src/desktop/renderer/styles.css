@@ -1,15 +1,15 @@
 :root {
   color-scheme: light;
-  --glass-fill: rgba(247, 249, 253, 0.64);
-  --glass-card: rgba(255, 255, 255, 0.58);
-  --glass-card-strong: rgba(238, 243, 251, 0.74);
-  --glass-line: rgba(255, 255, 255, 0.86);
-  --glass-line-dark: rgba(83, 99, 123, 0.18);
-  --glass-edge-light: rgba(255, 255, 255, 0.94);
-  --glass-edge-blue: rgba(85, 142, 226, 0.2);
-  --glass-edge-shadow: rgba(52, 65, 87, 0.16);
-  --text: rgba(23, 31, 44, 0.94);
-  --muted: rgba(75, 88, 108, 0.76);
+  --glass-fill: rgba(255, 255, 255, 0.34);
+  --glass-card: rgba(255, 255, 255, 0.48);
+  --glass-card-strong: rgba(255, 255, 255, 0.66);
+  --glass-line: rgba(255, 255, 255, 0.82);
+  --glass-line-dark: rgba(175, 190, 210, 0.34);
+  --glass-edge-light: rgba(255, 255, 255, 0.96);
+  --glass-edge-blue: rgba(154, 188, 238, 0.16);
+  --glass-edge-shadow: rgba(186, 200, 218, 0.22);
+  --text: rgba(31, 42, 60, 0.92);
+  --muted: rgba(112, 128, 150, 0.84);
   --blue: #2f7df6;
   --blue-strong: #1f67d9;
   --green: #138a4d;
@@ -28,6 +28,8 @@ body {
   margin: 0;
   overflow: hidden;
   background: transparent;
+  border-radius: 31px;
+  clip-path: inset(0 round 31px);
   color: var(--text);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -41,6 +43,7 @@ button {
   min-height: 38px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 14px;
+  outline: none;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08)),
     linear-gradient(135deg, rgba(77, 143, 255, 0.98), rgba(43, 111, 232, 0.9));
@@ -51,6 +54,10 @@ button {
   cursor: pointer;
   font-weight: 850;
   padding: 0 14px;
+}
+
+svg {
+  display: block;
 }
 
 button:hover {
@@ -67,24 +74,23 @@ button:disabled {
   isolation: isolate;
   width: 100vw;
   height: 100vh;
-  padding: 20px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 28px;
-  clip-path: inset(0 round 28px);
+  padding: 19px 20px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 31px;
+  clip-path: inset(0 round 31px);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(246, 249, 253, 0.5) 42%, rgba(219, 228, 240, 0.38) 100%),
-    linear-gradient(315deg, rgba(255, 255, 255, 0.18), rgba(82, 126, 194, 0.09) 58%, rgba(255, 255, 255, 0.35)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.24) 52%, rgba(245, 249, 255, 0.36) 100%),
+    radial-gradient(ellipse at 88% 8%, rgba(255, 255, 255, 0.62), transparent 34%),
+    radial-gradient(ellipse at 0% 100%, rgba(255, 255, 255, 0.48), transparent 42%),
     var(--glass-fill);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.98),
-    inset 0 -20px 38px rgba(80, 96, 122, 0.11),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-    0 2px 8px rgba(31, 42, 58, 0.12),
-    0 24px 60px rgba(21, 28, 42, 0.25);
-  backdrop-filter: blur(46px) saturate(1.85) brightness(1.04);
-  -webkit-backdrop-filter: blur(46px) saturate(1.85) brightness(1.04);
+    inset 0 -22px 44px rgba(233, 239, 248, 0.34),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+    0 18px 48px rgba(92, 110, 134, 0.2);
+  backdrop-filter: blur(52px) saturate(1.65) brightness(1.08);
+  -webkit-backdrop-filter: blur(52px) saturate(1.65) brightness(1.08);
 }
 
 .app::-webkit-scrollbar {
@@ -107,21 +113,21 @@ button:disabled {
 
 .app::before {
   background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.22) 24%, transparent 48%),
-    linear-gradient(245deg, transparent 48%, rgba(66, 103, 156, 0.12) 100%),
-    radial-gradient(ellipse at 50% -14%, rgba(255, 255, 255, 0.7), transparent 46%);
-  opacity: 0.78;
+    linear-gradient(118deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.18) 24%, transparent 48%),
+    linear-gradient(245deg, transparent 48%, rgba(255, 255, 255, 0.28) 100%),
+    radial-gradient(ellipse at 50% -14%, rgba(255, 255, 255, 0.58), transparent 46%);
+  opacity: 0.7;
   mix-blend-mode: screen;
 }
 
 .app::after {
-  padding: 1.5px;
+  padding: 2px;
   background:
-    linear-gradient(140deg, var(--glass-edge-light), rgba(255, 255, 255, 0.18) 28%, var(--glass-edge-blue) 52%, rgba(255, 255, 255, 0.74) 82%),
-    linear-gradient(320deg, rgba(255, 255, 255, 0.16), var(--glass-edge-shadow));
+    linear-gradient(140deg, var(--glass-edge-light), rgba(255, 255, 255, 0.24) 30%, var(--glass-edge-blue) 56%, rgba(255, 255, 255, 0.82) 84%),
+    linear-gradient(320deg, rgba(255, 255, 255, 0.22), var(--glass-edge-shadow));
   box-shadow:
-    inset 11px 11px 24px rgba(255, 255, 255, 0.35),
-    inset -18px -24px 36px rgba(62, 77, 101, 0.17);
+    inset 10px 10px 20px rgba(255, 255, 255, 0.32),
+    inset -18px -24px 36px rgba(213, 224, 239, 0.22);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -135,14 +141,18 @@ button:disabled {
 .titlebar,
 .quota-grid,
 .details,
-.actions,
+.toolbar,
 .settings {
   position: relative;
   z-index: 1;
 }
 
 .titlebar {
-  margin-bottom: 16px;
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
 }
 
 .eyebrow {
@@ -168,11 +178,66 @@ p {
 }
 
 h1 {
-  font-size: 30px;
+  font-size: 29px;
   font-weight: 930;
   letter-spacing: 0;
   line-height: 1.02;
   text-shadow: 0 1px 20px rgba(255, 255, 255, 0.16);
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  padding-top: 1px;
+}
+
+.icon-button,
+.copy-button {
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.22)),
+    rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 20px rgba(134, 151, 174, 0.16);
+  color: rgba(72, 92, 122, 0.86);
+  display: inline-flex;
+}
+
+.icon-button {
+  width: 34px;
+  min-height: 34px;
+  border-radius: 14px;
+}
+
+.icon-button svg,
+.copy-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.icon-button:hover,
+.copy-button:hover,
+.icon-button:focus-visible,
+.copy-button:focus-visible {
+  filter: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.34)),
+    rgba(255, 255, 255, 0.46);
+  border-color: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 8px 20px rgba(134, 151, 174, 0.16),
+    0 0 0 3px rgba(255, 255, 255, 0.34);
+  color: rgba(42, 61, 91, 0.92);
 }
 
 .status-pill {
@@ -182,11 +247,11 @@ h1 {
   min-height: 25px;
   max-width: 104px;
   padding: 0 10px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.82);
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.22)),
-    rgba(244, 248, 253, 0.58);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.3)),
+    rgba(255, 255, 255, 0.4);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -6px 14px rgba(73, 89, 111, 0.08),
@@ -225,7 +290,7 @@ h1 {
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr 1fr;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .metric,
@@ -235,14 +300,14 @@ h1 {
   overflow: hidden;
   border: 1px solid var(--glass-line);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.3)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.24)),
     var(--glass-card);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.88),
-    inset 0 -10px 22px rgba(73, 89, 111, 0.08),
-    0 10px 26px rgba(55, 68, 90, 0.12);
-  backdrop-filter: blur(30px) saturate(1.65) brightness(1.03);
-  -webkit-backdrop-filter: blur(30px) saturate(1.65) brightness(1.03);
+    inset 0 -10px 22px rgba(235, 241, 249, 0.28),
+    0 10px 26px rgba(128, 146, 171, 0.13);
+  backdrop-filter: blur(34px) saturate(1.48) brightness(1.06);
+  -webkit-backdrop-filter: blur(34px) saturate(1.48) brightness(1.06);
 }
 
 .metric::before,
@@ -286,8 +351,8 @@ label,
   grid-column: 1 / -1;
   min-height: 96px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(237, 245, 255, 0.38)),
-    linear-gradient(125deg, rgba(255, 255, 255, 0.3), rgba(70, 134, 230, 0.1)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.28)),
+    linear-gradient(125deg, rgba(255, 255, 255, 0.3), rgba(238, 245, 255, 0.22)),
     var(--glass-card);
 }
 
@@ -324,7 +389,7 @@ label,
   position: absolute;
   top: 12px;
   right: 13px;
-  color: rgba(47, 125, 246, 0.75);
+  color: rgba(95, 116, 148, 0.58);
   font-size: 15px;
   font-weight: 900;
   opacity: 0;
@@ -334,15 +399,15 @@ label,
 
 .metric.interactive:hover,
 .metric.interactive:focus-visible {
-  border-color: rgba(47, 125, 246, 0.48);
+  border-color: rgba(255, 255, 255, 0.9);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(232, 240, 255, 0.4)),
-    rgba(255, 255, 255, 0.64);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.32)),
+    rgba(255, 255, 255, 0.56);
   transform: translateY(-1px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    inset 0 -10px 22px rgba(73, 89, 111, 0.08),
-    0 12px 28px rgba(47, 125, 246, 0.16);
+    inset 0 -10px 22px rgba(235, 241, 249, 0.3),
+    0 12px 26px rgba(134, 151, 174, 0.16);
 }
 
 .metric.interactive:hover::after,
@@ -358,13 +423,13 @@ label,
 
 .details {
   border-radius: 18px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .row {
-  min-height: 36px;
+  min-height: 35px;
   padding: 7px 13px;
-  border-bottom: 1px solid rgba(82, 98, 120, 0.16);
+  border-bottom: 1px solid rgba(206, 218, 232, 0.54);
   display: flex;
   gap: 12px;
   align-items: center;
@@ -390,7 +455,29 @@ label,
   text-align: right;
 }
 
-.actions,
+.token-value {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  min-width: 0;
+}
+
+.copy-button {
+  width: 27px;
+  min-height: 27px;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.copy-button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.copy-button.copied {
+  color: var(--green);
+}
+
 .settings-actions {
   display: flex;
   gap: 9px;

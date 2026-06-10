@@ -6,6 +6,8 @@ contextBridge.exposeInMainWorld('quotaAPI', {
   clearToken: () => ipcRenderer.invoke('quota:clear-token'),
   refresh: () => ipcRenderer.invoke('quota:refresh'),
   openUsage: () => ipcRenderer.invoke('quota:open-usage'),
+  copyToken: () => ipcRenderer.invoke('quota:copy-token'),
+  setExpanded: (expanded) => ipcRenderer.invoke('quota:set-expanded', expanded),
   hide: () => ipcRenderer.invoke('quota:hide'),
   onStateChange: (callback) => {
     const listener = (_event, state) => callback(state);

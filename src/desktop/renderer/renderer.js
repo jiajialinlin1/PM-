@@ -8,6 +8,7 @@ const elements = {
   expiresAt: document.querySelector('#expiresAt'),
   updatedAt: document.querySelector('#updatedAt'),
   maskedToken: document.querySelector('#maskedToken'),
+  copyTokenButton: document.querySelector('#copyTokenButton'),
   refreshButton: document.querySelector('#refreshButton'),
   showSettingsButton: document.querySelector('#showSettingsButton'),
   settingsPanel: document.querySelector('#settingsPanel'),
@@ -20,6 +21,7 @@ let currentState = null;
 let hideTimer = null;
 
 elements.refreshButton.addEventListener('click', () => runAction(() => window.quotaAPI.refresh()));
+elements.copyTokenButton.addEventListener('click', () => copyToken());
 elements.usedMetric.addEventListener('click', () => window.quotaAPI.openUsage());
 elements.usedMetric.addEventListener('keydown', (event) => {
   if (event.key === 'Enter' || event.key === ' ') {
@@ -29,6 +31,7 @@ elements.usedMetric.addEventListener('keydown', (event) => {
 });
 elements.showSettingsButton.addEventListener('click', () => {
   elements.settingsPanel.hidden = !elements.settingsPanel.hidden;
+  window.quotaAPI.setExpanded(!elements.settingsPanel.hidden);
   if (!elements.settingsPanel.hidden) {
     elements.tokenInput.focus();
   }
@@ -58,6 +61,7 @@ async function saveToken() {
     await window.quotaAPI.saveToken(elements.tokenInput.value);
     elements.tokenInput.value = '';
     elements.settingsPanel.hidden = true;
+    await window.quotaAPI.setExpanded(false);
   });
 }
 
@@ -85,11 +89,30 @@ function setBusy(isBusy) {
   elements.clearTokenButton.disabled = isBusy;
 }
 
+async function copyToken() {
+  try {
+    await window.quotaAPI.copyToken();
+    elements.copyTokenButton.classList.add('copied');
+    elements.copyTokenButton.title = '已复制';
+    setTimeout(() => {
+      elements.copyTokenButton.classList.remove('copied');
+      elements.copyTokenButton.title = '复制 token';
+    }, 900);
+  } catch (error) {
+    render({
+      ...currentState,
+      loading: false,
+      error: error.message || '复制失败'
+    });
+  }
+}
+
 function render(state) {
   currentState = state;
   const snapshot = state.snapshot;
 
   elements.maskedToken.textContent = state.maskedToken || '未设置';
+  elements.copyTokenButton.disabled = !state.hasToken;
   elements.remainingUsd.textContent = snapshot
     ? snapshot.unlimitedQuota ? '无限制' : formatUsd(snapshot.remainingUsd, 3)
     : '未知';
@@ -107,6 +130,7 @@ function render(state) {
 
   if (!state.hasToken) {
     elements.settingsPanel.hidden = false;
+    window.quotaAPI.setExpanded(true);
   }
 }
 
