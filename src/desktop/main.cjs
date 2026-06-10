@@ -7,9 +7,10 @@ const {
   ipcMain,
   nativeImage,
   safeStorage,
-  screen
+  screen,
+  shell
 } = require('electron');
-const { buildTooltip, fetchQuotaSnapshot, maskToken } = require('./quota-service.cjs');
+const { fetchQuotaSnapshot, maskToken } = require('./quota-service.cjs');
 const { createStore } = require('./storage.cjs');
 
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
@@ -101,6 +102,7 @@ function createTray() {
   icon.setTemplateImage(true);
 
   tray = new Tray(icon);
+  tray.setToolTip('');
   tray.setIgnoreDoubleClickEvents(true);
   tray.on('mouse-enter', () => showPopover());
   tray.on('mouse-move', () => {
@@ -133,6 +135,8 @@ function createPopover() {
     skipTaskbar: true,
     alwaysOnTop: true,
     transparent: true,
+    vibrancy: 'popover',
+    visualEffectState: 'active',
     backgroundColor: '#00000000',
     hasShadow: false,
     roundedCorners: false,
@@ -156,6 +160,9 @@ function registerIpc() {
   ipcMain.handle('quota:get-state', () => getPublicState());
   ipcMain.handle('quota:hide', () => {
     popover.hide();
+  });
+  ipcMain.handle('quota:open-usage', () => {
+    shell.openExternal('https://used.8s.hk/');
   });
   ipcMain.handle('quota:save-token', async (_event, token) => {
     const cleanToken = String(token || '').trim();
@@ -339,7 +346,7 @@ function updateTray() {
     ? `$${Number(state.snapshot.remainingUsd || 0).toFixed(2)}`
     : '';
   tray.setTitle(title);
-  tray.setToolTip(buildTooltip(state));
+  tray.setToolTip('');
 }
 
 function emitState() {

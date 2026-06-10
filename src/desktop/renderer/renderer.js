@@ -3,6 +3,7 @@ const elements = {
   remainingUsd: document.querySelector('#remainingUsd'),
   totalUsd: document.querySelector('#totalUsd'),
   usedUsd: document.querySelector('#usedUsd'),
+  usedMetric: document.querySelector('#usedMetric'),
   tokenName: document.querySelector('#tokenName'),
   expiresAt: document.querySelector('#expiresAt'),
   updatedAt: document.querySelector('#updatedAt'),
@@ -19,6 +20,13 @@ let currentState = null;
 let hideTimer = null;
 
 elements.refreshButton.addEventListener('click', () => runAction(() => window.quotaAPI.refresh()));
+elements.usedMetric.addEventListener('click', () => window.quotaAPI.openUsage());
+elements.usedMetric.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    window.quotaAPI.openUsage();
+  }
+});
 elements.showSettingsButton.addEventListener('click', () => {
   elements.settingsPanel.hidden = !elements.settingsPanel.hidden;
   if (!elements.settingsPanel.hidden) {
