@@ -15,6 +15,8 @@ const { createStore } = require('./storage.cjs');
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 const WINDOW_WIDTH = 390;
 const WINDOW_HEIGHT = 560;
+const TRAY_ICON_BASE64 =
+  'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAR0lEQVR4nGNgoCP4D8VUMYRiw6hiELohZBuGTRPJBuGynWRXUcUgfOFBUlhRxSBCMUR0DNLNIHQ1RBlEjDqiXUQIDyGDyAYAgcplmzSG3qgAAAAASUVORK5CYII=';
 
 let tray;
 let popover;
@@ -89,7 +91,7 @@ function readStoredToken() {
 }
 
 function createTray() {
-  const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'tray.svg'));
+  const icon = nativeImage.createFromBuffer(Buffer.from(TRAY_ICON_BASE64, 'base64'));
   icon.setTemplateImage(true);
 
   tray = new Tray(icon);
