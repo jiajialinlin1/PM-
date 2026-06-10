@@ -1,5 +1,5 @@
 const elements = {
-  statusBanner: document.querySelector('#statusBanner'),
+  statusPill: document.querySelector('#statusPill'),
   remainingUsd: document.querySelector('#remainingUsd'),
   totalUsd: document.querySelector('#totalUsd'),
   usedUsd: document.querySelector('#usedUsd'),
@@ -39,7 +39,7 @@ document.body.addEventListener('mouseenter', () => {
   }
 });
 document.body.addEventListener('mouseleave', () => {
-  hideTimer = setTimeout(() => window.quotaAPI.hide(), 90);
+  hideTimer = setTimeout(() => window.quotaAPI.hide(), 50);
 });
 
 window.quotaAPI.onStateChange(render);
@@ -95,47 +95,50 @@ function render(state) {
   elements.expiresAt.textContent = formatDateTime(snapshot?.expiresAt, '永不过期');
   elements.updatedAt.textContent = formatDateTime(snapshot?.updatedAt, '未知');
 
-  renderBanner(state);
+  renderStatus(state);
 
   if (!state.hasToken) {
     elements.settingsPanel.hidden = false;
   }
 }
 
-function renderBanner(state) {
-  elements.statusBanner.className = 'banner';
-
+function renderStatus(state) {
+  elements.statusPill.className = 'status-pill';
+  elements.statusPill.title = '';
   if (!state.encryptionAvailable) {
-    elements.statusBanner.textContent = '系统加密能力不可用，无法保存 token';
-    elements.statusBanner.classList.add('error');
+    elements.statusPill.textContent = '加密不可用';
+    elements.statusPill.classList.add('error');
     return;
   }
 
   if (!state.hasToken) {
-    elements.statusBanner.textContent = '请先设置 token，应用会将它加密保存在本机。';
-    elements.statusBanner.classList.add('warn');
+    elements.statusPill.textContent = '未设置';
+    elements.statusPill.classList.add('warn');
     return;
   }
 
   if (state.loading) {
-    elements.statusBanner.textContent = '正在查询额度...';
+    elements.statusPill.textContent = '查询中';
+    elements.statusPill.classList.add('loading');
     return;
   }
 
   if (state.error && state.snapshot?.status === 'stale') {
-    elements.statusBanner.textContent = `${state.error}。当前显示最近缓存数据，不会继续频繁请求。`;
-    elements.statusBanner.classList.add('warn');
+    elements.statusPill.textContent = state.error.includes('限流') ? '限流缓存' : '缓存';
+    elements.statusPill.title = `${state.error}。当前显示最近缓存数据，不会继续频繁请求。`;
+    elements.statusPill.classList.add('warn');
     return;
   }
 
   if (state.error) {
-    elements.statusBanner.textContent = state.error;
-    elements.statusBanner.classList.add('error');
+    elements.statusPill.textContent = state.error.includes('限流') ? '限流' : '错误';
+    elements.statusPill.title = state.error;
+    elements.statusPill.classList.add('error');
     return;
   }
 
-  elements.statusBanner.textContent = '额度数据已更新。';
-  elements.statusBanner.classList.add('ok');
+  elements.statusPill.textContent = '已更新';
+  elements.statusPill.classList.add('ok');
 }
 
 function formatUsd(value, digits = 3) {
