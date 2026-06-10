@@ -1,56 +1,60 @@
-# Product Starter
+# Token Quota Monitor
 
-一个轻量的产品原型全栈骨架，包含：
+一个 macOS 菜单栏常驻桌面应用，用于查询并显示 `https://used.8s.hk` / `https://8s.hk` token 额度。
 
-- 前端：原生 HTML/CSS/JavaScript 单页界面
-- 后端：Node.js 内置 HTTP API
-- 数据库：Node.js 内置 SQLite 驱动
+## 功能
 
-这个版本不需要安装第三方依赖，适合作为产品想法、需求管理、MVP 后台的第一版基础。
+- 常驻 macOS 状态栏。
+- 鼠标悬停状态栏图标时显示额度摘要。
+- 点击状态栏图标打开小弹窗，查看完整额度、最近调用、刷新状态和 token 设置。
+- 单 token 管理。
+- token 使用 Electron `safeStorage` 加密保存到本机用户数据目录。
+- 查询失败时继续显示最近一次成功缓存，并标记为缓存数据。
 
 ## 快速开始
 
 ```bash
-npm run db:seed
-npm run dev
+npm install
+npm run dev:desktop
 ```
 
-打开：
+## 打包 macOS 应用
 
-```text
-http://127.0.0.1:3000
+```bash
+npm run build:mac
 ```
+
+生成的 `.app` 位于 `dist/` 目录。
 
 ## 项目结构
 
 ```text
 src/
+  desktop/
+    main.cjs              # Electron 主进程、Tray、窗口和 IPC
+    preload.cjs           # 安全 IPC 桥接
+    quota-service.cjs     # 额度查询和数据格式化
+    storage.cjs           # safeStorage 加密存储
+    renderer/             # 菜单栏弹窗 UI
   backend/
-    config.js      # 环境变量和路径配置
-    db.js          # SQLite 连接、建表、数据访问
-    http.js        # HTTP 工具函数
-    seed.js        # 示例数据
-    server.js      # API 路由和静态资源服务
-  frontend/
-    app.js         # 前端交互逻辑
-    index.html     # 页面结构
-    styles.css     # 界面样式
-data/
-  .gitkeep         # 数据目录占位
+    ...                   # 旧 Web 原型服务，保留但不是桌面端主入口
 ```
 
-## API
+## 查询接口
 
-- `GET /api/health`：服务健康状态
-- `GET /api/features`：获取功能列表
-- `POST /api/features`：新增功能
-- `PATCH /api/features/:id/status`：更新功能状态
-- `GET /api/feedback`：获取反馈列表
-- `POST /api/feedback`：新增反馈
+应用直接请求：
 
-## 下一步建议
+- `GET https://8s.hk/api/usage/token/`
+- `GET https://8s.hk/api/log/token`
 
-1. 根据你的产品方向定义真实数据模型。
-2. 接入登录和权限。
-3. 把前端替换为 React/Vue，或继续保持轻量原生实现。
-4. 增加自动化测试和部署配置。
+请求头：
+
+```text
+Authorization: Bearer <token>
+```
+
+额度换算：
+
+```text
+$1 = 500000 quota
+```

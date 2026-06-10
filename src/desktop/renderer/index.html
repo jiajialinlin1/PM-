@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Token Quota Monitor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="titlebar">
+        <div>
+          <p class="eyebrow">8s token quota</p>
+          <h1>额度监控</h1>
+        </div>
+        <button id="closeButton" class="icon-button" type="button" aria-label="关闭">×</button>
+      </header>
+
+      <section id="statusBanner" class="banner">正在读取状态...</section>
+
+      <section class="quota-grid" aria-label="额度概览">
+        <article class="metric primary">
+          <p>剩余额度</p>
+          <strong id="remainingUsd">未知</strong>
+        </article>
+        <article class="metric">
+          <p>总额度</p>
+          <strong id="totalUsd">未知</strong>
+        </article>
+        <article class="metric">
+          <p>已用额度</p>
+          <strong id="usedUsd">未知</strong>
+        </article>
+      </section>
+
+      <section class="details">
+        <div class="row">
+          <span>令牌名称</span>
+          <strong id="tokenName">未知</strong>
+        </div>
+        <div class="row">
+          <span>有效期至</span>
+          <strong id="expiresAt">未知</strong>
+        </div>
+        <div class="row">
+          <span>更新时间</span>
+          <strong id="updatedAt">未知</strong>
+        </div>
+        <div class="row">
+          <span>已保存 token</span>
+          <strong id="maskedToken">未设置</strong>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="refreshButton" type="button">刷新额度</button>
+        <button id="showSettingsButton" class="secondary" type="button">设置 token</button>
+      </section>
+
+      <section id="settingsPanel" class="settings" hidden>
+        <label>
+          Token
+          <input id="tokenInput" type="password" autocomplete="off" spellcheck="false" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
+        </label>
+        <div class="settings-actions">
+          <button id="saveTokenButton" type="button">保存并查询</button>
+          <button id="clearTokenButton" class="danger" type="button">清除</button>
+        </div>
+      </section>
+
+      <section class="logs">
+        <div class="section-heading">
+          <h2>最近调用</h2>
+        </div>
+        <div id="logsList" class="logs-list"></div>
+      </section>
+    </main>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

@@ -1,14 +1,36 @@
 {
-  "name": "product-starter",
+  "name": "token-quota-menubar",
   "version": "0.1.0",
+  "description": "macOS menu bar token quota monitor",
   "private": true,
   "type": "module",
+  "main": "src/desktop/main.cjs",
   "scripts": {
     "dev": "node src/backend/server.js",
+    "dev:desktop": "electron .",
     "start": "NODE_ENV=production node src/backend/server.js",
-    "db:seed": "node src/backend/seed.js"
+    "db:seed": "node src/backend/seed.js",
+    "build:mac": "electron-builder --mac dir"
   },
   "engines": {
     "node": ">=24"
+  },
+  "build": {
+    "appId": "com.local.token-quota-menubar",
+    "productName": "Token Quota Monitor",
+    "files": [
+      "package.json",
+      "src/desktop/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dir"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2"
   }
 }
