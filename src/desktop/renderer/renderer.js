@@ -117,7 +117,7 @@ function renderBanner(state) {
   }
 
   if (state.error && state.snapshot?.status === 'stale') {
-    elements.statusBanner.textContent = `${state.error}，当前显示最近缓存数据。`;
+    elements.statusBanner.textContent = `${state.error}。当前显示最近缓存数据，不会继续频繁请求。`;
     elements.statusBanner.classList.add('warn');
     return;
   }

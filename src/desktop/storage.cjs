@@ -51,12 +51,23 @@ function createStore(app, safeStorage) {
     writeState({ ...state, cache });
   }
 
+  function getRateLimitUntil() {
+    return Number(readState().rateLimitedUntil || 0);
+  }
+
+  function saveRateLimitUntil(rateLimitedUntil) {
+    const state = readState();
+    writeState({ ...state, rateLimitedUntil });
+  }
+
   return {
     getToken,
     saveToken,
     clearToken,
     getCache,
-    saveCache
+    saveCache,
+    getRateLimitUntil,
+    saveRateLimitUntil
   };
 }
 

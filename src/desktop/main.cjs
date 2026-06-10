@@ -13,6 +13,8 @@ const { buildTooltip, fetchQuotaSnapshot, maskToken } = require('./quota-service
 const { createStore } = require('./storage.cjs');
 
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+const MANUAL_REFRESH_COOLDOWN_MS = 60 * 1000;
+const RATE_LIMIT_BACKOFF_MS = 30 * 60 * 1000;
 const WINDOW_WIDTH = 390;
 const WINDOW_HEIGHT = 560;
 const TRAY_ICON_BASE64 =
@@ -22,6 +24,9 @@ let tray;
 let popover;
 let store;
 let refreshTimer;
+let activeRefresh = null;
+let lastRefreshStartedAt = 0;
+let rateLimitedUntil = 0;
 
 const state = {
   hasToken: false,
@@ -55,7 +60,7 @@ app.whenReady().then(() => {
   updateTray();
 
   if (state.hasToken) {
-    refreshQuota();
+    refreshQuota({ reason: 'startup', force: false });
   } else {
     showPopover();
   }
@@ -79,6 +84,7 @@ function loadPersistedState() {
   state.maskedToken = token ? maskToken(token) : '';
   state.snapshot = token ? cache || null : null;
   state.error = token ? '' : '请先设置 token';
+  rateLimitedUntil = store.getRateLimitUntil();
 }
 
 function readStoredToken() {
@@ -99,7 +105,7 @@ function createTray() {
   tray.on('click', () => togglePopover());
   tray.on('right-click', () => {
     const menu = Menu.buildFromTemplate([
-      { label: '刷新额度', click: () => refreshQuota(true) },
+      { label: '刷新额度', click: () => refreshQuota({ reason: 'manual', force: true, showWindowOnMissingToken: true }) },
       { type: 'separator' },
       { label: '退出', click: () => app.quit() }
     ]);
@@ -154,8 +160,10 @@ function registerIpc() {
     state.maskedToken = maskToken(cleanToken);
     state.error = '';
     state.snapshot = store.getCache();
+    rateLimitedUntil = 0;
+    store.saveRateLimitUntil(0);
     emitState();
-    await refreshQuota(true);
+    await refreshQuota({ reason: 'token-save', force: true });
     return getPublicState();
   });
   ipcMain.handle('quota:clear-token', () => {
@@ -170,12 +178,23 @@ function registerIpc() {
     return getPublicState();
   });
   ipcMain.handle('quota:refresh', async () => {
-    await refreshQuota(true);
+    await refreshQuota({ reason: 'manual', force: true, showWindowOnMissingToken: true });
     return getPublicState();
   });
 }
 
-async function refreshQuota(showWindowOnMissingToken = false) {
+async function refreshQuota(options = {}) {
+  const {
+    reason = 'auto',
+    force = false,
+    showWindowOnMissingToken = false
+  } = options;
+  const now = Date.now();
+
+  if (activeRefresh) {
+    return activeRefresh;
+  }
+
   const token = readStoredToken();
   if (!token) {
     state.hasToken = false;
@@ -190,27 +209,78 @@ async function refreshQuota(showWindowOnMissingToken = false) {
     return;
   }
 
+  if (rateLimitedUntil > now) {
+    const waitMinutes = Math.max(1, Math.ceil((rateLimitedUntil - now) / 60000));
+    state.hasToken = true;
+    state.maskedToken = maskToken(token);
+    state.loading = false;
+    state.error = `接口限流中，请约 ${waitMinutes} 分钟后再刷新`;
+    updateTray();
+    emitState();
+    return;
+  }
+
+  const snapshotAge = state.snapshot?.updatedAt
+    ? now - new Date(state.snapshot.updatedAt).getTime()
+    : Number.POSITIVE_INFINITY;
+  const minInterval = reason === 'manual' ? MANUAL_REFRESH_COOLDOWN_MS : REFRESH_INTERVAL_MS;
+  const sinceLastStart = now - lastRefreshStartedAt;
+
+  if (!force && snapshotAge < REFRESH_INTERVAL_MS) {
+    state.error = '';
+    state.loading = false;
+    updateTray();
+    emitState();
+    return;
+  }
+
+  if (sinceLastStart < minInterval) {
+    const waitSeconds = Math.max(1, Math.ceil((minInterval - sinceLastStart) / 1000));
+    state.loading = false;
+    state.error = reason === 'manual'
+      ? `刷新过于频繁，请 ${waitSeconds} 秒后再试`
+      : '';
+    updateTray();
+    emitState();
+    return;
+  }
+
   state.hasToken = true;
   state.maskedToken = maskToken(token);
   state.loading = true;
   state.error = '';
+  lastRefreshStartedAt = now;
   updateTray();
   emitState();
 
-  try {
-    const snapshot = await fetchQuotaSnapshot(token);
-    state.snapshot = snapshot;
-    state.error = '';
-    store.saveCache(snapshot);
-  } catch (error) {
-    const cache = store.getCache();
-    state.snapshot = cache ? { ...cache, status: 'stale' } : null;
-    state.error = error.message || '查询失败';
-  } finally {
-    state.loading = false;
-    updateTray();
-    emitState();
-  }
+  activeRefresh = (async () => {
+    try {
+      const snapshot = await fetchQuotaSnapshot(token);
+      state.snapshot = snapshot;
+      state.error = '';
+      rateLimitedUntil = 0;
+      store.saveRateLimitUntil(0);
+      store.saveCache(snapshot);
+    } catch (error) {
+      const cache = store.getCache();
+      state.snapshot = cache ? { ...cache, status: 'stale' } : null;
+
+      if (error.statusCode === 429) {
+        rateLimitedUntil = Date.now() + RATE_LIMIT_BACKOFF_MS;
+        store.saveRateLimitUntil(rateLimitedUntil);
+        state.error = '远端接口限流，已暂停自动刷新 30 分钟';
+      } else {
+        state.error = error.message || '查询失败';
+      }
+    } finally {
+      state.loading = false;
+      activeRefresh = null;
+      updateTray();
+      emitState();
+    }
+  })();
+
+  return activeRefresh;
 }
 
 function togglePopover() {
@@ -232,7 +302,7 @@ function showPopover() {
   emitState();
 
   if (state.hasToken) {
-    refreshQuota();
+    refreshQuota({ reason: 'open', force: false });
   }
 }
 

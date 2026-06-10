@@ -57,7 +57,9 @@ async function fetchJson(pathname, token) {
 
     const payload = await response.json().catch(() => null);
     if (!response.ok) {
-      throw new Error(payload?.message || `请求失败：HTTP ${response.status}`);
+      const error = new Error(payload?.message || `请求失败：HTTP ${response.status}`);
+      error.statusCode = response.status;
+      throw error;
     }
 
     return payload;
